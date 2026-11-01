@@ -62,7 +62,7 @@ System({
   type: "news",
   desc: "India Today news fetcher"
 }, async (message, match) => {
-  const result = await getJson(api + 'news/indiatoday');
+  const { result } = await getJson(api + 'news/indiatoday');
   if (!Array.isArray(result) || result.length === 0) return message.reply('No news items found');
   if (match.toLowerCase() === 'headline') {
     const caption = result.map((item, i) => `*${i + 1}. ${item.title}*\n🔗 ${item.link}`).join('\n\n');
