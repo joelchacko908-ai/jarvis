@@ -10,7 +10,7 @@ Jarvis - Loki-Xer
 ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 const { System, isPrivate } = require("../lib/");
-const { getJson, LokiXer, IronMan } = require('./client/');
+const { getJson } = require('./client/');
 
 System({
   pattern: 'manorama',
@@ -18,7 +18,7 @@ System({
   type: "news",
   desc: "Manorama news fetcher"
 }, async (message, match) => {
-  const { result } = await getJson(`${api}news/manorama`);
+  const { result } = await getJson(api + 'news/manorama');
   if (!Array.isArray(result) || !result.length) return message.reply('No news items found');
   if (match.toLowerCase() === 'headline') {
     const caption = result.map((item, i) => `*${i + 1}. ${item.title}*\n🕒 ${item.date}\n🔗 ${item.link}`).join('\n\n');
@@ -37,7 +37,7 @@ System({
   type: "news",
   desc: "Twentyfour news fetcher"
 }, async (message, match) => {
-  const parsedResult = await getJson(`${api}news/twentyfour`);
+  const parsedResult = await getJson(api + 'news/twentyfour');
   const result = JSON.parse(parsedResult.result);
   if (!Array.isArray(result) || !result.length) return message.reply('No valid news items found');
   const filtered = result.filter(item => {
@@ -49,7 +49,7 @@ System({
     return message.send(`*📰 Twentyfour News Headlines:*\n\n${caption}`, 'text', { footer: '*Twentyfour News*' });
   }
   const news = filtered[Math.floor(Math.random() * filtered.length)];
-  return message.send(news.img, 'image', {
+  return message.send(news.image, 'image', {
     caption: `*Headlines:* ${news.title}\n\n*Link:* ${news.link}`,
     footer: '*Twentyfour News*'
   });
@@ -62,7 +62,7 @@ System({
   type: "news",
   desc: "India Today news fetcher"
 }, async (message, match) => {
-  const result = await getJson(IronMan('ironman/news/indiatoday'));
+  const result = await getJson(api + 'news/indiatoday');
   if (!Array.isArray(result) || result.length === 0) return message.reply('No news items found');
   if (match.toLowerCase() === 'headline') {
     const caption = result.map((item, i) => `*${i + 1}. ${item.title}*\n🔗 ${item.link}`).join('\n\n');
@@ -101,7 +101,7 @@ System({
   type: "news",
   desc: "Mathrubhumi news fetcher"
 }, async (message, match) => {
-  const { result } = await getJson(`${api}news/mathrubhumi`);
+  const { result } = await getJson(api + 'news/mathrubhumi');
   if (!Array.isArray(result) || result.length === 0) return message.reply('No news items found');
   if (match.toLowerCase() === 'headline') {
     const caption = result.map((item, i) => `*${i + 1}. ${item.title}*\nTime: ${item.date}\nLink: ${item.link}`).join('\n\n');
