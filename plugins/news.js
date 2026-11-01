@@ -37,8 +37,7 @@ System({
   type: "news",
   desc: "Twentyfour news fetcher"
 }, async (message, match) => {
-  const parsedResult = await getJson(api + 'news/twentyfour');
-  const result = JSON.parse(parsedResult.result);
+  const { result } = await getJson(api + 'news/twentyfour');
   if (!Array.isArray(result) || !result.length) return message.reply('No valid news items found');
   const filtered = result.filter(item => {
     const title = item.title?.trim().toLowerCase();
