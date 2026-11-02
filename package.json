@@ -4,8 +4,10 @@
     "description": "A simple WhatsApp Bot Based On WhiskeySockets/Baileys",
     "main": "index.js",
     "type": "commonjs",
+    "private": true,
     "scripts": {
-        "start": "pm2 start . --attach --name jarvis",
+        "start": "node index.js",
+        "pm2": "pm2 start . --attach --name jarvis",
         "stop": "pm2 stop jarvis",
         "dev": "node index.js",
         "restart": "pm2 restart jarvis",
@@ -13,14 +15,10 @@
         "status": "pm2 status"
     },
     "engines": {
-        "node": ">=18.0.0 <=27.x"
+        "node": ">=20.0.0 <27.0.0"
     },
-    "author": "",
+    "author": "Loki-Xer",
     "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": ""
-    },
     "keywords": [
         "whatsapp",
         "bot",
