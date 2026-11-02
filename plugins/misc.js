@@ -61,7 +61,9 @@ System({
     type: 'whatsapp',
 }, async (message, match) => {
     const num = (match || '').replace(/[^0-9]/g, '');
-    let user = message.mention?.jid?.[0] || (message.quoted ? message.reply_message.sender : (num ? `${num}@s.whatsapp.net` : ''));
+    let user = message.mention?.jid?.[0]
+        || (message.quoted ? message.reply_message.sender : (num ? `${num}@s.whatsapp.net` : ''))
+        || (message.isPm ? message.jid : '');
     if (!user) return message.reply('_Reply to someone or mention_\n*Example:* .whois @user');
 
     let [pp, name] = await Promise.all([message.getPP(user), message.store.getName(user)]);
