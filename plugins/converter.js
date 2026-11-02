@@ -177,21 +177,21 @@ System({
     desc: "to trim audio/video",
     type: "converter",
 }, async (m, text) => {
-    if (!(m.video || (m.quoted && (m.reply_message.audio || m.reply_message.video)))) return m.reply("*Reply to a video/audio e.g. _.trim 1.0,3.0*");
-    if (!text) return m.reply("*Need query to trim e.g.: _.trim 1.0,3.0*");
+    if (!(m.video || (m.quoted && (m.reply_message.audio || m.reply_message.video)))) return m.reply("*Reply to a video/audio e.g. _.trim 0:00,1:10*");
+    if (!text) return m.reply("*Need query to trim e.g.: _.trim 0:00,1:10*");
     const parts = text.split(',').map(part => part.trim());
-    const numberRegex = /^-?\d+(\.\d+)?$/;
+    const numberRegex = /^-?\d+(:\d+)?$/;
     const areValidNumbers = parts.every(part => numberRegex.test(part));
-    if (!areValidNumbers) return m.reply("*Please check your format. The correct format is .trim 1.0,3.0*");
+    if (!areValidNumbers) return m.reply("*Please check your format. The correct format is .trim 0:00,1:10*");
     if (m.video && m.reply_message.video) {
         const file = await m.downloadMediaMessage(m.video ? m.msg : m.quoted ? m.reply_message.msg : null);
         const output = await trim(file, parts[0], parts[1]);
-        if (!output) return m.reply("*Please check your format. The correct format is .trim 1.0,3.0*"); 
+        if (!output) return m.reply("*Please check your format. The correct format is .trim 0:00,1:10*"); 
         await m.reply(output, {}, "video");
     } else if (m.reply_message.audio) {
         const file = await toVideo(await m.reply_message.downloadAndSave());
         const output = await trim(file, parts[0], parts[1]);
-        if (!output) return m.reply("*Please check your format. The correct format is .trim 1.0,3.0*");
+        if (!output) return m.reply("*Please check your format. The correct format is .trim 0:00,1:10*");
         await m.reply(output, { mimetype: "audio/mp4" }, "audio");
     }
 });
