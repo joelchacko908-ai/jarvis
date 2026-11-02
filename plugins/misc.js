@@ -55,21 +55,48 @@ System({
 
 
 System({
-      pattern: 'whois',
-      fromMe: isPrivate,
-      desc: 'to find how is',
-      type: 'whatsapp',
-  }, async (message, match) => {
-      let user = message.quoted ? message.reply_message.sender : `${match.replace(/[^0-9]/g, '')}@s.whatsapp.net`;
-      if (!user) return message.reply('_Reply to someone or mention_\n*Example:* .whois @user');
-      let [pp, name] = await Promise.all([message.getPP(user), message.store.getName(user)]);
-      let [statusObj] = await message.client.fetchStatus(user).catch(() => ([{ status: 'private' }]));
-      let aboutText = (statusObj.status && statusObj.status.status) || 'private';
-      let setAtDate = statusObj.status && statusObj.status.setAt;
-      let formattedSetAt = setAtDate ? new Date(setAtDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }) : 'Not available';
-      let caption = `*Name:* ${name}\n`;
-      caption += isJid(user) ? `*About:* ${aboutText}${formattedSetAt ? `\n*About Set Date:* ${formattedSetAt}` : ''}\n*WhatsApp:* https://wa.me/${user.split('@')[0]}` : '*About:* Number is Private';
-      await message.send({ url: pp }, { caption, quoted: message }, 'image');
+    pattern: 'whois',
+    fromMe: isPrivate,
+    desc: 'to find who is',
+    type: 'whatsapp',
+}, async (message, match) => {
+    const num = (match || '').replace(/[^0-9]/g, '');
+    let user = message.mention?.jid?.[0] || (message.quoted ? message.reply_message.sender : (num ? `${num}@s.whatsapp.net` : ''));
+    if (!user) return message.reply('_Reply to someone or mention_\n*Example:* .whois @user');
+
+    let [pp, name] = await Promise.all([message.getPP(user), message.store.getName(user)]);
+    let [statusObj] = await message.client.fetchStatus(user).catch(() => ([{ status: 'private' }]));
+    let aboutText = (statusObj?.status && statusObj.status.status) || 'private';
+    let setAtDate = statusObj?.status && statusObj.status.setAt;
+    let formattedSetAt = setAtDate ? new Date(setAtDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }) : 'Not available';
+    
+    const business = await message.client.getBusinessProfile(user).catch(() => null);
+    const isBusiness = !!(business && business.wid);
+
+    let caption = `*Name:* ${name}\n`;
+    caption += `*About:* ${aboutText}\n*About Set Date:* ${formattedSetAt}\n`;
+    caption += `*WhatsApp:* https://wa.me/${user.split('@')[0]}\n`;
+    caption += `*Account Type:* ${isBusiness ? 'Business 💼' : 'Personal 👤'}`;
+
+    if (isBusiness) {
+        const toTime = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+        const hours = (business.business_hours?.business_config || []).map(d => {
+            if (d.mode === 'open_24h') return `${d.day_of_week}: 24 hours`;
+            if (d.mode === 'appointment_only') return `${d.day_of_week}: by appointment`;
+            return `${d.day_of_week}: ${toTime(d.open_time)} - ${toTime(d.close_time)}`;
+        }).join('\n');
+
+        caption += `\n\n*── Business Info ──*`;
+        if (business.category) caption += `\n*Category:* ${business.category}`;
+        if (business.description) caption += `\n*Description:* ${business.description}`;
+        if (business.address) caption += `\n*Address:* ${business.address}`;
+        if (business.email) caption += `\n*Email:* ${business.email}`;
+        if (business.website?.length) caption += `\n*Website:* ${business.website.join('\n')}`;
+        if (business.business_hours?.timezone) caption += `\n*Timezone:* ${business.business_hours.timezone}`;
+        if (hours) caption += `\n*Hours:*\n${hours}`;
+    }
+
+    return await message.send({ url: pp }, { caption, quoted: message }, 'image');
 });
   
   System({
