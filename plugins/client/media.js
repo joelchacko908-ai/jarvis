@@ -18,11 +18,19 @@ const audioCut = (infile, start, end, filename = "cutted") => new Promise((resol
 });
 
 async function trim(buff, startTrim, endTrim) {
-  const start = parseFloat(startTrim);
-  const end = parseFloat(endTrim);
-  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start) {
+  
+  const toSeconds = (value) => {
+    const parts = String(value).trim().split(':').map(Number);
+    if (parts.length > 2 || parts.some(n => !Number.isFinite(n) || n < 0)) return NaN;
+    return parts.length === 2 ? parts[0] * 60 + parts[1] : parts[0];
+  };
+
+  const start = toSeconds(startTrim);
+  const end = toSeconds(endTrim);
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
     throw new Error("Invalid trim range");
-  }
+  };
 
   const id = crypto.randomUUID();
   const tempFile = path.join(os.tmpdir(), `${id}-in.mp4`);
@@ -46,11 +54,10 @@ async function trim(buff, startTrim, endTrim) {
   } finally {
     await Promise.allSettled([
       fs.promises.unlink(tempFile),
-      fs.promises.unlink(outputFile),
+      fs.promises.unlink(outputFile)
     ]);
   }
 };
-
 
 async function createRoundSticker(mediaBuffer) {
   const roundedSticker = await sharp(mediaBuffer)
