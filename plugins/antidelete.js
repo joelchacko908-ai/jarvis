@@ -50,14 +50,21 @@ System({
     type: "manage",
     desc: "To get info about promot and demote"
 }, async (message, match) => {
-    if (match === "on") { 
-      const antiviewones = await setData(message.user.id, "active", "true", "antiviewones");
-      return await message.send("_*activated*_");
-    } else if (match === "off") {
-      const antiviewones = await setData(message.user.id, "disactive", "false", "antiviewones");
-      return await message.send("_*deactivated*_");
+    if(!match) return await message.reply("*Example:*\n\n_*antiviewones on/off*_\n_*antiviewones jid/chat/pm*_\n");
+    const { antiviewones } = await getData(message.user.id);
+    if (match === "off") {
+        const jid = antiviewones && antiviewones.message ? antiviewones.message : "chat";
+        await setData(message.user.id, jid, "false", "antiviewones");
+        await message.reply("_*antiviewones disabled*_");
+    } else if (match === "on") {
+        const jid = antiviewones && antiviewones.message ? antiviewones.message : "chat";
+        await setData(message.user.id, jid, "true", "antiviewones");
+        await message.reply("_*antiviewones enabled*_");
     } else {
-      if (!message.isGroup) return message.send("_*antiviewones on/off*_");
-      await message.send("\n*Choose a a settings to on/off antiviewones*\n",{ values: [{ displayText: "*on*", id: "antiviewones on" }, { displayText: "*off*", id: "antiviewones off" }], withPrefix: true, participates: [message.sender] }, "poll");
+        const [jid] = await parsedJid(match);
+        if (!jid && match !== "chat" && match !== "pm") return await message.reply("*Example:*\n\n_*antiviewones on/off*_\n_*antiviewones jid/chat/pm*_");
+        const status = antiviewones?.status || "false";
+        await setData(message.user.id, jid || match, status, "antiviewones");
+        await message.reply(`_*antiviewones set to ${jid || match}*_`);
     };
 });
