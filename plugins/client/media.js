@@ -32,7 +32,7 @@ async function trim(buff, startTrim, endTrim) {
     await fs.promises.writeFile(tempFile, buff);
 
     await new Promise((resolve, reject) => {
-      ff(tempFile)
+      ffmpeg(tempFile)
         .setStartTime(start)
         .setDuration(end - start)
         .outputOptions("-movflags +faststart")
