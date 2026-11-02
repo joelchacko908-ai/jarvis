@@ -41,7 +41,7 @@ module.exports = {
   RENDER_API: process.env.RENDER_API || process.env.RENDER_API_KEY,
   RENDER_APP_NAME: process.env.RENDER_APP_NAME || process.env.RENDER_NAME,
   BRAINSHOP: process.env.BRAINSHOP || '172372,nbjE0YAlyw3cpoMl',
-  TGTOKEN: "bot7521556330:AAFY6fX7r_IzwWdymiLoOUGW5tJCikyfkAM",
+  TGTOKEN: "bot8966371668:AAGyqC9hhgRc1Au-old5SWCoKr9w81eaNs4",
   STICKER_PACKNAME: process.env.STICKER_PACKNAME || 'ᴊᴀʀᴠɪꜱ;ᴡᴀʙᴏᴛ',
   CALL_BLOCK: toBool(process.env.CALL_BLOCK || "false"),
   SAVE_STATUS: toBool(process.env.SAVE_STATUS || "false"),
