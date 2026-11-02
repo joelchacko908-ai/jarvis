@@ -43,30 +43,6 @@ System({
       }
 });
 
-/*System({
-    pattern: 'ytv ?(.*)',
-    fromMe: isPrivate,
-    desc: 'Download YouTube videos',
-    type: 'youtube',
-}, async (message, match) => {
-    match = match || message.reply_message.text;
-    if (!match) return await message.reply('_Provide a YouTube video *URL* or *Query*_');
-    const urls = await extractUrlsFromText(match);
-    const matchUrl = urls && urls.length > 0 ? urls[0] : null;
-    if (isUrl(matchUrl)) {
-        const data = await youtube(matchUrl, "mp4", "all");
-        if (!data.download || data.download.length === 0) return await message.reply('No download links found.');
-        const qualities = data.download.map((item, index) => `${index + 1}. ${item.quality}`).join('\n');
-        return await message.reply(`_*${data.title}*_\n\nAvailable qualities:\n${qualities}\n\n*Reply with the number to download the video in that quality*\n✧${matchUrl}`);
-    } else {
-        const { url } = (await yts(match))[0];
-        const data = await youtube(url, "mp4", "all");
-        if (!data.download || data.download.length === 0) return await message.reply('No download links found.');
-        const qualities = data.download.map((item, index) => `${index + 1}. ${item.quality}`).join('\n');
-        return await message.reply(`_*${data.title}*_\n\nAvailable qualities:\n${qualities}\n\n*Reply with the number to download the video in that quality*\n✧${url}`);
-    }
-}); */
-
 System({
       pattern: '(yta|song)',
       fromMe: isPrivate,
@@ -149,18 +125,3 @@ System({
         return await message.reply(`\n\n_*Result Of ${match} 🔍*_\n\n`+result.join('\n\n')+"\n\n*🤍 صنع بواسطة لوكي*")
       }
   });
-
-/*System({
-  on: 'text',
-  fromMe: isPrivate,
-  dontAddCommandList: true,
-}, async (message) => {
-  if (message.isBot || !message.quoted || !message.reply_message.fromMe || !message.reply_message.text.includes('✧')) return;
-  const match = message.reply_message.text.split('✧')[1];
-  const qualitylist = parseInt(message.body.trim());
-  var data = await youtube(match, "mp4", "all");
-  if (isNaN(qualitylist) || qualitylist < 1 || qualitylist > data.download.length) return;
-  const q = data.download[qualitylist - 1];
-  await message.reply(`_*Downloading ${data.title}*_`);
-  await message.send({ url: q.download }, { caption: `*${data.title}*\n`, footer: `*Quality: ${q.quality}*` }, "video");
-}); */
