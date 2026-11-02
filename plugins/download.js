@@ -49,7 +49,7 @@ System({
         const packname = stickerPackNameParts[0];
         const author = stickerPackNameParts[1];
         await message.send(buff, { packname, author, webp: true }, "sticker");
-        await sleep(5500);
+        await sleep(3000);
     }
     return await message.reply('Done');
 });
