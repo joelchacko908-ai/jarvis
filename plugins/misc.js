@@ -10,9 +10,11 @@ Jarvis - Loki-Xer
 ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 const {
+    gtts,
     isJid,
     System,
     config,
+    toAudio,
     isPrivate 
 } = require("../lib/");
 const { isUrl, extractUrlsFromText } = require('./client/');
@@ -115,12 +117,8 @@ System({
         LANG = lang[1];
         if (message.reply_message.text) match = message.reply_message.text;
       }
-      const response = await fetch(api + 'tools/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: match, lang: LANG }) });
-      if (response.ok) {
-          const data = await response.arrayBuffer();
-          await message.reply(Buffer.from(data), { mimetype: 'audio/ogg; codecs=opus', ptt: true }, "audio");
-      } else {
-          await message.reply("Error:", response.status, response.statusText);
-      }
+      const response = await gtts(match, LANG);
+      const audio = await toAudio(response, 'opus');
+      await message.reply(audio, { mimetype: 'audio/ogg; codecs=opus', ptt: true }, "audio");
   });
   
