@@ -1,6 +1,9 @@
 const ffmpeg = require('fluent-ffmpeg');
 const sharp = require('sharp'); 
 const fs = require('fs');
+const os = require("os");
+const path = require("path");
+const crypto = require("crypto");
 
 const audioCut = (infile, start, end, filename = "cutted") => new Promise((resolve, reject) => {
   ffmpeg(infile)
@@ -15,26 +18,37 @@ const audioCut = (infile, start, end, filename = "cutted") => new Promise((resol
 });
 
 async function trim(buff, startTrim, endTrim) {
-    try {
-        const tempFile = "../temp.mp4";
-        const outputFile = "trimmed_video.mp4";
-        await fs.promises.writeFile(tempFile, buff);
-        await new Promise((resolve, reject) => {
-            ffmpeg(tempFile)
-                .setStartTime(startTrim)
-                .setDuration(parseFloat(endTrim) - parseFloat(startTrim))
-                .output(outputFile)
-                .on('end', resolve)
-                .on('error', reject)
-                .run();
-        });
-        const file = await fs.promises.readFile(outputFile);
-        await fs.promises.unlink(tempFile);
-        await fs.promises.unlink(outputFile);
-        return file;
-    } catch (error) {
-        return false;;
-    }
+  const start = parseFloat(startTrim);
+  const end = parseFloat(endTrim);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start) {
+    throw new Error("Invalid trim range");
+  }
+
+  const id = crypto.randomUUID();
+  const tempFile = path.join(os.tmpdir(), `${id}-in.mp4`);
+  const outputFile = path.join(os.tmpdir(), `${id}-out.mp4`);
+
+  try {
+    await fs.promises.writeFile(tempFile, buff);
+
+    await new Promise((resolve, reject) => {
+      ff(tempFile)
+        .setStartTime(start)
+        .setDuration(end - start)
+        .outputOptions("-movflags +faststart")
+        .output(outputFile)
+        .on("end", resolve)
+        .on("error", reject)
+        .run();
+    });
+
+    return await fs.promises.readFile(outputFile);
+  } finally {
+    await Promise.allSettled([
+      fs.promises.unlink(tempFile),
+      fs.promises.unlink(outputFile),
+    ]);
+  }
 };
 
 
