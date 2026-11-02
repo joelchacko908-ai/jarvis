@@ -9,7 +9,8 @@ Jarvis - Loki-Xer
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-const { System, isPrivate, spotifyMetaData, extractUrlsFromText } = require("../lib/");
+const { System, isPrivate, spotifyMetaData } = require("../lib/");
+const { extractUrlsFromText } = require('./client/');
 
 System({
   pattern: 'spotify',
