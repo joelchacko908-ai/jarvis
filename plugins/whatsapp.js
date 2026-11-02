@@ -9,7 +9,7 @@ Jarvis - Loki-Xer
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-const { System, setData } = require("../lib");
+const { System } = require("../lib");
 const { parsedJid } = require("./client/");
 
 System({
@@ -46,24 +46,6 @@ System({
 }, async (message) => {
     if (!message.quoted) return await message.reply("_Reply to a message to delete it!_");
     await message.reply(message.reply_message.data.key, {}, "delete");
-});
-
-System({
-    pattern: "antiviewones",
-    fromMe: true,
-    type: "manage",
-    desc: "To get info about promot and demote"
-}, async (message, match) => {
-    if (match === "on") { 
-      const antiviewones = await setData(message.user.id, "active", "true", "antiviewones");
-      return await message.send("_*activated*_");
-    } else if (match === "off") {
-      const antiviewones = await setData(message.user.id, "disactive", "false", "antiviewones");
-      return await message.send("_*deactivated*_");
-    } else {
-      if (!message.isGroup) return message.send("_*antiviewones on/off*_");
-      await message.send("\n*Choose a a settings to on/off antiviewones*\n",{ values: [{ displayText: "*on*", id: "antiviewones on" }, { displayText: "*off*", id: "antiviewones off" }], withPrefix: true, participates: [message.sender] }, "poll");
-    };
 });
 
 System({
