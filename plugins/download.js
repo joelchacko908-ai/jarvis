@@ -217,28 +217,6 @@ System({
 });
 
 System({
-  pattern: 'spotify',
-  fromMe: isPrivate,
-  type: 'download',
-  desc: 'Downloads song from Spotify'
-}, async (message, match, m) => {
-  const link = (await extractUrlsFromText(match || message.reply_message.text))[0];
-  if (!link || !link.includes('spotify')) return await message.reply("_Give a valid Spotify *Url*_");
-  const { download: lnk, cover_url: cover, artist, title } = await getJson(IronMan(`ironman/dl/spotify?link=${link}`));
-  await message.send(`_*Downloading ${title}...*_`);
-  const [img, aud] = await Promise.all([getBuffer(cover), getBuffer(lnk)]);
-  await message.reply(await toAudio(aud), {
-      mimetype: 'audio/mpeg',
-      linkPreview: {
-            title, body: artist, 
-	    thumbnail: img,
-            mediaType: 1, sourceUrl: 'https://github.com/Loki-Xer/Jarvis',
-            showAdAttribution: true, renderLargerThumbnail: true
-      }
-  }, "audio");
-});
-
-System({
     pattern: 'sendurl',
     fromMe: isPrivate,
     type: 'download',
