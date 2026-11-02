@@ -606,3 +606,29 @@ System({
     };
     await message.send(match === "all" ? '_*Reject all*_' : '_*Reject selected members*_');
 });
+
+System({
+    pattern: "gadd",
+    fromMe: true,
+    type: "group",
+    onlyGroup: true,
+    adminAccess: true,
+    desc: "Set who can add members to the group (all / admin)"
+}, async (message, match) => {
+    if (!await isBotAdmins(message)) return await message.reply("_I'm not admin_");
+    match = match?.trim().toLowerCase();
+    const modes = { all: "all_member_add", admin: "admin_add", admins: "admin_add" };
+    if (!match) {
+        return await message.send("\n*Who can add members? 👥*\n", {
+            values: [
+                { displayText: "*All Members*", id: "gadd all" },
+                { displayText: "*Only Admins*", id: "gadd admin" }
+            ],
+            withPrefix: true,
+            participates: [message.sender]
+        }, "poll");
+    }
+    if (!modes[match]) return await message.reply("*Example:*\n_.memberadd all_ (everyone can add)\n_.memberadd admin_ (only admins can add)");
+    await message.client.groupMemberAddMode(message.jid, modes[match]);
+    return await message.send(match === "all" ? "*Everyone can add members now :)*" : "*Only admins can add members now !*");
+});
