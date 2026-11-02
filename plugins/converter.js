@@ -179,7 +179,7 @@ System({
 }, async (m, text) => {
     if (!(m.video || (m.quoted && (m.reply_message.audio || m.reply_message.video)))) return m.reply("*Reply to a video/audio e.g. _.trim 1.0,3.0*");
     if (!text) return m.reply("*Need query to trim e.g.: _.trim 1.0,3.0*");
-    const parts = text.split(',');
+    const parts = text.split(',').map(part => part.trim());
     const numberRegex = /^-?\d+(\.\d+)?$/;
     const areValidNumbers = parts.every(part => numberRegex.test(part));
     if (!areValidNumbers) return m.reply("*Please check your format. The correct format is .trim 1.0,3.0*");
