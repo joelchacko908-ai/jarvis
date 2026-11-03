@@ -6,8 +6,7 @@
     "type": "commonjs",
     "private": true,
     "scripts": {
-        "start": "node index.js",
-        "pm2": "pm2 start . --attach --name jarvis",
+        "start": "pm2 start . --attach --name jarvis",
         "stop": "pm2 stop jarvis",
         "dev": "node index.js",
         "restart": "pm2 restart jarvis",
